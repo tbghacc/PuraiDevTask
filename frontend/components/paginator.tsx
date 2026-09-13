@@ -46,7 +46,7 @@ export default function Paginator({ page, perPage, total, onPageChange, onPerPag
     <div className="flex items-center gap-3 text-sm">
       <span>
         Showing <span className="font-medium">{firstRow}</span>
-        {"–"}
+        {" - "}
         <span className="font-medium">{lastRow}</span> of{" "}
         <span className="font-medium">{total}</span>
       </span>

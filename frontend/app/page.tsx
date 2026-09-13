@@ -6,6 +6,7 @@ import Paginator  from "@/components/paginator"
 import dynamic from "next/dynamic";
 import type { TrendPoint } from "@/types";
 import Filters from "@/components/filters";
+import TrendSection from "@/components/trendSection";
 
 export default function Dashboard() {
   const TrendChart = dynamic(() => import("@/components/TrendChart"), { ssr: false });
@@ -34,29 +35,6 @@ export default function Dashboard() {
 		.then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
 		.then((data: string[]) => setModels(data))
 		.catch((e) => console.error("models failed:", e));
-  }, []);
-  
-  useEffect(() => {
-  async function load() {
-    try {
-	  const res = await fetch("http://localhost:8000/mentions/trends", {
-					  method: "POST",
-					  headers: {
-						"Content-Type": "application/json",
-					  },
-					  body: JSON.stringify({
-						date_from: "2025-01-01",
-						date_to: "2025-03-01"
-					  }),
-					});
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const body: TrendPoint[] = await res.json();
-      setTrend(body);
-    } catch (e) {
-      console.error("trend failed:", e);
-    }
-  }
-  load();
   }, []);
 
   useEffect(() => {
@@ -170,11 +148,11 @@ export default function Dashboard() {
 				  />
 		   </div>
 	   </div>
-	    {trend.length > 0 && (
-		<div className="mb-8 rounded-lg bg-white p-4 shadow-sm">
-		  <TrendChart data={trend} />
+	   <hr className="mb-5"/>
+	   <h2 className="text-center text-xl font-bold mb-6">Trend Chart</h2>
+		<div className="mb-8 rounded-lg bg-white p-4 border border-2 border-black">
+		   <TrendSection />
 		</div>
-		)}
     </main>
   );
 }

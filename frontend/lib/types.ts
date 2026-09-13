@@ -1,12 +1,4 @@
 // Types matching the backend API contract
-
-export interface MentionFilters {
-  model?: "chatgpt" | "claude" | "gemini" | "perplexity";
-  sentiment?: "positive" | "neutral" | "negative";
-  date_from?: string; // YYYY-MM-DD
-  date_to?: string; // YYYY-MM-DD
-}
-
 export interface MentionsRequest {
   page: number;
   per_page: number;
@@ -38,7 +30,7 @@ export interface MentionsResponse {
   per_page: number;
 }
 
-export interface TrendsRequest {
+export interface TrendFilters {
   date_from?: string;
   date_to?: string;
   group_by: "day" | "week";

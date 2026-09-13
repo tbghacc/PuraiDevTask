@@ -9,6 +9,11 @@ from typing import Literal
 
 # TODO: Initialize database connection (use aiosqlite)
 
+BUCKETS = {
+    "day":  "date(created_at)",
+    "week": "date(created_at, '-' || ((strftime('%w', created_at) + 6) % 7) || ' days')",
+}
+
 class MentionsQuery(BaseModel):
     page: int
     per_page: int
@@ -18,8 +23,9 @@ class MentionsQuery(BaseModel):
     date_to: datetime | None = None
 
 class TrendsQuery(BaseModel):
-    date_from: datetime
-    date_to: datetime
+    date_from: datetime | None = None
+    date_to: datetime | None = None
+    group_by: Literal["day", "week"] = "day"
 
 DB_PATH = Path(__file__).parent / "mentions.db"
 
@@ -106,20 +112,38 @@ async def mentions(body: MentionsQuery, db: aiosqlite.Connection = Depends(get_d
     }
 
 @app.post("/mentions/trends")
-async def trends(body:TrendsQuery, db: aiosqlite.Connection = Depends(get_db)):
-    async with db.execute(
-        """
+async def trends(body: TrendsQuery, db: aiosqlite.Connection = Depends(get_db)):
+    date_from = body.date_from
+    date_to = body.date_to
+
+    if date_from is None or date_to is None:
+        async with db.execute(
+            "SELECT MIN(created_at) AS mn, MAX(created_at) AS mx FROM mentions"
+        ) as cur:
+            bounds = await cur.fetchone()
+
+        if bounds["mn"] is None:
+            return []
+
+        if date_from is None:
+            date_from = bounds["mn"]
+        if date_to is None:
+            date_to = bounds["mx"]
+
+    bucket = BUCKETS[body.group_by]
+
+    sql = f"""
         SELECT
-            date(created_at) AS date,
+            {bucket}         AS date,
             COUNT(*)         AS total,
             SUM(mentioned)   AS mentioned
         FROM mentions
         WHERE created_at BETWEEN ? AND ?
-        GROUP BY date(created_at)
-        ORDER BY date ASC
-        """,
-        (body.date_from, body.date_to),
-    ) as cur:
+        GROUP BY {bucket}
+        ORDER BY {bucket} ASC
+    """
+
+    async with db.execute(sql, (date_from, date_to)) as cur:
         rows = await cur.fetchall()
 
     return [dict(r) for r in rows]

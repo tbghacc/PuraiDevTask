@@ -90,7 +90,7 @@ export default function Dashboard() {
   }, [page, perPage, filters]);
   
   const longestModel = Math.max("Model".length, ...models.map((m) => m.length));
-  const idWidth = String(total).length + 3;
+  const idWidth = Math.max(5, String(total).length) + 3;
   
   function handlePerPageChange(next: number) {
     setPerPage(next);
@@ -108,14 +108,16 @@ export default function Dashboard() {
     <main className="min-h-screen p-8">
       <h1 className="text-center text-2xl font-bold mb-6">Brand Mentions Dashboard</h1>
 	  <div>
-		  <Filters filters={filters} models={models} onChange={updateFilters} />
-		  <Paginator
-				page={page}
-				perPage={perPage}
-				total={total}
-				onPageChange={setPage}
-				onPerPageChange={handlePerPageChange}
-			  />
+		  <div className="flex justify-between mt-4 mb-4">
+			  <Filters filters={filters} models={models} onChange={updateFilters} />
+			  <Paginator
+					page={page}
+					perPage={perPage}
+					total={total}
+					onPageChange={setPage}
+					onPerPageChange={handlePerPageChange}
+				  />
+		   </div>
 		  <table className="w-full border-collapse table-fixed border border-2"> 
 			<thead>
 			  <tr>
@@ -157,14 +159,16 @@ export default function Dashboard() {
 			  ))}
 			</tbody>
 		  </table>
-		  <Filters filters={filters} models={models} onChange={updateFilters} />
-		  <Paginator
-				page={page}
-				perPage={perPage}
-				total={total}
-				onPageChange={setPage}
-				onPerPageChange={handlePerPageChange}
-			  />
+		  <div className="flex justify-between mt-4 mb-4">
+			  <Filters filters={filters} models={models} onChange={updateFilters} />
+			  <Paginator
+					page={page}
+					perPage={perPage}
+					total={total}
+					onPageChange={setPage}
+					onPerPageChange={handlePerPageChange}
+				  />
+		   </div>
 	   </div>
 	    {trend.length > 0 && (
 		<div className="mb-8 rounded-lg bg-white p-4 shadow-sm">

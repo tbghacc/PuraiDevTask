@@ -58,15 +58,18 @@ async def mentions(body: MentionsQuery, db: aiosqlite.Connection = Depends(get_d
     page = max(1, body.page)
     offset = (page - 1) * per_page
     
+    async with db.execute("SELECT COUNT(*) FROM mentions") as cur:
+        total = (await cur.fetchone())[0]
     async with db.execute("SELECT * FROM mentions LIMIT ?,?",(offset, per_page),) as cur:
         rows = await cur.fetchall()
 
     return {
         "data": [dict(r) for r in rows],
-        "total": len(rows),
+        "total": total,
         "page": page,
         "per_page": per_page,
     }
+
 @app.post("/mentions/trends")
 async def trends(body:TrendsQuery, db: aiosqlite.Connection = Depends(get_db)):
     async with db.execute(

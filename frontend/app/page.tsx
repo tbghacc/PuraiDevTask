@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [page, setPage] = useState<int>(1)
   const [perPage, setPerPage] = useState<int>(25)
   
+  
   const [filters, setFilters] = useState<MentionFilters>({
     model: "",
     sentiment: "",
@@ -88,7 +89,10 @@ export default function Dashboard() {
     load();
   }, [page, perPage, filters]);
   
-   function handlePerPageChange(next: number) {
+  const longestModel = Math.max("Model".length, ...models.map((m) => m.length));
+  const idWidth = String(total).length + 3;
+  
+  function handlePerPageChange(next: number) {
     setPerPage(next);
     setPage(1);
   }
@@ -112,38 +116,43 @@ export default function Dashboard() {
 				onPageChange={setPage}
 				onPerPageChange={handlePerPageChange}
 			  />
-		  <table className="w-full border-collapse border">
+		  <table className="w-full border-collapse table-fixed border border-2"> 
 			<thead>
 			  <tr>
-				<th className="text-left border p-1">  ID </th>
-				<th className="text-left border p-1"> Query</th>
-				<th className="text-left border p-1"> Model</th>
-				<th className="text-left border p-1"> Mentioned</th>
-				<th className="text-left border p-1"> Position</th>
-				<th className="text-left border p-1"> Sentiment</th>
-				<th className="text-left border p-1"> Citation URL</th>
-				<th className="text-left border p-1"> Created At</th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: `${idWidth}ch` }}>  ID </th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: "25%" }}> Query </th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: `${longestModel}ch` }}> Model</th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: "11ch" }}> Mentioned</th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: "10ch" }}> Position</th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: "11ch" }}> Sentiment</th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: "25%" }}> Citation URL</th>
+				<th className="text-left bg-sky-500 border p-2 whitespace-nowrap" style={{ width: "22%" }}> Created At</th>
 			  </tr>
 			</thead>
 			<tbody>
 			  {mentions.map((m) => (
-				<tr key={m.id}>
-				  <td className="text-left border p-1">{m.id}</td>
-				  <td className="text-left border p-1">{m.query_text}</td>
-				  <td className="text-left border p-1">{m.model}</td>
-				  <td className="text-left border p-1">{m.mentioned ? "Yes" : "No"}</td>
-				  <td className="text-left border p-1">{m.position ?? "—"}</td>
-				  <td className="text-left border p-1">{m.sentiment ?? "—"}</td>
-				  <td className="text-left border p-1">
+				<tr key={m.id}>	
+				  <td className="text-left bg-sky-300 border p-2 whitespace-nowrap">{m.id}</td>
+				  <td className="text-left bg-sky-300 border p-2">{m.query_text}</td>
+				  <td className="text-left bg-sky-300 border p-2 whitespace-nowrap">{m.model}</td>
+				  <td className="text-left bg-sky-300 border p-2">{m.mentioned ? "Yes" : "No"}</td>
+				  <td className="text-left bg-sky-300 border p-2">{m.position ?? "-"}</td>
+				  <td className="text-left bg-sky-300 border p-2">{m.sentiment ?? "-"}</td>
+				  <td className="text-left bg-sky-300 border p-2 break-words">
 					{m.citation_url ? (
-					  <a href={m.citation_url} target="_blank" rel="noreferrer">
+					  <a target="_blank" rel="noreferrer">
 						{m.citation_url}
 					  </a>
 					) : (
-					  "—"
+					  "-"
 					)}
 				  </td>
-				  <td className="text-left border p-1">{new Date(m.created_at).toLocaleString()}</td>
+				  <td className="text-left bg-sky-300 border p-2">{new Date(m.created_at).toLocaleString(undefined, {year: "2-digit",
+																													 month: "numeric",
+																													 day: "numeric",
+																													 hour: "numeric",
+																													 minute: "2-digit",
+																													})}</td>
 				</tr>
 			  ))}
 			</tbody>

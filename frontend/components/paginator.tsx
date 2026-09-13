@@ -33,7 +33,7 @@ export default function Paginator({ page, perPage, total, onPageChange, onPerPag
   }
 
   return (
-    <div>
+    <div className="flex items-center gap-3 mt-2 mb-2 justify-end">
       <button onClick={() => onPageChange(page - 1)} disabled={!canPrev}>
         Previous
       </button>

@@ -68,50 +68,59 @@ export default function Dashboard() {
   if (error) return <p>Error: {error}</p>;
   return (
     <main className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-6">Brand Mentions Dashboard</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Query</th>
-            <th>Model</th>
-            <th>Mentioned</th>
-            <th>Position</th>
-            <th>Sentiment</th>
-            <th>Citation URL</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mentions.map((m) => (
-            <tr key={m.id}>
-              <td>{m.id}</td>
-              <td>{m.query_text}</td>
-              <td>{m.model}</td>
-              <td>{m.mentioned ? "Yes" : "No"}</td>
-              <td>{m.position ?? "—"}</td>
-              <td>{m.sentiment ?? "—"}</td>
-              <td>
-                {m.citation_url ? (
-                  <a href={m.citation_url} target="_blank" rel="noreferrer">
-                    {m.citation_url}
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </td>
-              <td>{new Date(m.created_at).toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-	  <Paginator
-            page={page}
-            perPage={perPage}
-            total={total}
-            onPageChange={setPage}
+      <h1 className="text-center text-2xl font-bold mb-6">Brand Mentions Dashboard</h1>
+	  <div>
+		  <Paginator
+			page={page}
+			perPage={perPage}
+			total={total}
+			onPageChange={setPage}
 			onPerPageChange={handlePerPageChange}
-          />
+		  />
+		  <table className="w-full border-collapse border">
+			<thead>
+			  <tr>
+				<th className="text-left border p-1">  ID </th>
+				<th className="text-left border p-1"> Query</th>
+				<th className="text-left border p-1"> Model</th>
+				<th className="text-left border p-1"> Mentioned</th>
+				<th className="text-left border p-1"> Position</th>
+				<th className="text-left border p-1"> Sentiment</th>
+				<th className="text-left border p-1"> Citation URL</th>
+				<th className="text-left border p-1"> Created At</th>
+			  </tr>
+			</thead>
+			<tbody>
+			  {mentions.map((m) => (
+				<tr key={m.id}>
+				  <td className="text-left border p-1">{m.id}</td>
+				  <td className="text-left border p-1">{m.query_text}</td>
+				  <td className="text-left border p-1">{m.model}</td>
+				  <td className="text-left border p-1">{m.mentioned ? "Yes" : "No"}</td>
+				  <td className="text-left border p-1">{m.position ?? "—"}</td>
+				  <td className="text-left border p-1">{m.sentiment ?? "—"}</td>
+				  <td className="text-left border p-1">
+					{m.citation_url ? (
+					  <a href={m.citation_url} target="_blank" rel="noreferrer">
+						{m.citation_url}
+					  </a>
+					) : (
+					  "—"
+					)}
+				  </td>
+				  <td className="text-left border p-1">{new Date(m.created_at).toLocaleString()}</td>
+				</tr>
+			  ))}
+			</tbody>
+		  </table>
+		  <Paginator
+				page={page}
+				perPage={perPage}
+				total={total}
+				onPageChange={setPage}
+				onPerPageChange={handlePerPageChange}
+			  />
+	   </div>
     </main>
   );
 }

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Literal
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 

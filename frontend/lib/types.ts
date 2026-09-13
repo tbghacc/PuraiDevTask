@@ -24,6 +24,13 @@ export interface Mention {
   created_at: string;
 }
 
+export interface MentionFilters {
+  model: string;
+  sentiment: "" | "positive" | "neutral" | "negative";
+  date_from: string; // "YYYY-MM-DD" or ""
+  date_to: string;   // "YYYY-MM-DD" or ""
+}
+
 export interface MentionsResponse {
   data: Mention[];
   total: number;
@@ -46,3 +53,5 @@ export interface TrendPoint {
 export interface TrendsResponse {
   data: TrendPoint[];
 }
+
+export type MentionModelsResponse = string[];

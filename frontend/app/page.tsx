@@ -5,26 +5,7 @@ import type { MentionsResponse } from "@/lib/types";
 import Paginator  from "@/components/paginator"
 import dynamic from "next/dynamic";
 import type { TrendPoint } from "@/types";
-
-// TODO: Build a Brand Mentions Dashboard with:
-//
-// 1. A mentions table with pagination
-//    - Show: query_text, model, mentioned (yes/no), position, sentiment, citation_url, date
-//    - Paginate through results
-//
-// 2. Filter controls
-//    - Model dropdown (chatgpt, claude, gemini, perplexity)
-//    - Sentiment dropdown (positive, neutral, negative)
-//    - Date range inputs
-//
-// 3. A trend chart (line or bar)
-//    - Show total mentions vs. mentioned=true over time
-//    - Use recharts or any charting library
-//
-// 4. Loading and empty states
-//
-// API base URL: http://localhost:8000
-// See /lib/types.ts for request/response types
+import Filters from "@/components/filters";
 
 export default function Dashboard() {
   const TrendChart = dynamic(() => import("@/components/TrendChart"), { ssr: false });
@@ -37,6 +18,22 @@ export default function Dashboard() {
   
   const [page, setPage] = useState<int>(1)
   const [perPage, setPerPage] = useState<int>(25)
+  
+  const [filters, setFilters] = useState<MentionFilters>({
+    model: "",
+    sentiment: "",
+    date_from: "",
+    date_to: "",
+  });
+  
+  const [models, setModels] = useState<string[]>([]);
+
+  useEffect(() => {
+	  fetch("http://localhost:8000/mentions/models")
+		.then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+		.then((data: string[]) => setModels(data))
+		.catch((e) => console.error("models failed:", e));
+  }, []);
   
   useEffect(() => {
   async function load() {
@@ -72,6 +69,10 @@ export default function Dashboard() {
 						  body: JSON.stringify({
 							page: page,
 							per_page: perPage,
+							model: filters.model || null,
+							sentiment: filters.sentiment || null,
+							date_from: filters.date_from || null,
+							date_to: filters.date_to || null
 						  }),
 						});
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -85,10 +86,15 @@ export default function Dashboard() {
       }
     }
     load();
-  }, [page, perPage]);
+  }, [page, perPage, filters]);
   
    function handlePerPageChange(next: number) {
     setPerPage(next);
+    setPage(1);
+  }
+  
+  function updateFilters(next: MentionFilters) {
+    setFilters(next);
     setPage(1);
   }
 
@@ -98,13 +104,14 @@ export default function Dashboard() {
     <main className="min-h-screen p-8">
       <h1 className="text-center text-2xl font-bold mb-6">Brand Mentions Dashboard</h1>
 	  <div>
+		  <Filters filters={filters} models={models} onChange={updateFilters} />
 		  <Paginator
-			page={page}
-			perPage={perPage}
-			total={total}
-			onPageChange={setPage}
-			onPerPageChange={handlePerPageChange}
-		  />
+				page={page}
+				perPage={perPage}
+				total={total}
+				onPageChange={setPage}
+				onPerPageChange={handlePerPageChange}
+			  />
 		  <table className="w-full border-collapse border">
 			<thead>
 			  <tr>
@@ -141,6 +148,7 @@ export default function Dashboard() {
 			  ))}
 			</tbody>
 		  </table>
+		  <Filters filters={filters} models={models} onChange={updateFilters} />
 		  <Paginator
 				page={page}
 				perPage={perPage}

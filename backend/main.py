@@ -6,6 +6,9 @@ from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Literal
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BUCKETS = {
     "day":  "date(created_at)",
@@ -45,9 +48,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Brand Mentions API", lifespan=lifespan)
 
+origins = [
+    o.strip()
+    for o in os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
+    if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

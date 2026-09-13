@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import type { MentionsResponse } from "@/lib/types";
 import Paginator  from "@/components/paginator"
+import dynamic from "next/dynamic";
+import type { TrendPoint } from "@/types";
 
 // TODO: Build a Brand Mentions Dashboard with:
 //
@@ -25,13 +27,39 @@ import Paginator  from "@/components/paginator"
 // See /lib/types.ts for request/response types
 
 export default function Dashboard() {
+  const TrendChart = dynamic(() => import("@/components/TrendChart"), { ssr: false });
+	
   const [mentions, setMentions] = useState<Mention[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [trend, setTrend] = useState<TrendPoint[]>([]);
   
   const [page, setPage] = useState<int>(1)
   const [perPage, setPerPage] = useState<int>(25)
+  
+  useEffect(() => {
+  async function load() {
+    try {
+	  const res = await fetch("http://localhost:8000/mentions/trends", {
+					  method: "POST",
+					  headers: {
+						"Content-Type": "application/json",
+					  },
+					  body: JSON.stringify({
+						date_from: "2025-01-01",
+						date_to: "2025-03-01"
+					  }),
+					});
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body: TrendPoint[] = await res.json();
+      setTrend(body);
+    } catch (e) {
+      console.error("trend failed:", e);
+    }
+  }
+  load();
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -121,6 +149,11 @@ export default function Dashboard() {
 				onPerPageChange={handlePerPageChange}
 			  />
 	   </div>
+	    {trend.length > 0 && (
+		<div className="mb-8 rounded-lg bg-white p-4 shadow-sm">
+		  <TrendChart data={trend} />
+		</div>
+		)}
     </main>
   );
 }

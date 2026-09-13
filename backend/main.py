@@ -7,8 +7,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Literal
 
-# TODO: Initialize database connection (use aiosqlite)
-
 BUCKETS = {
     "day":  "date(created_at)",
     "week": "date(created_at, '-' || ((strftime('%w', created_at) + 6) % 7) || ' days')",
@@ -45,10 +43,6 @@ async def lifespan(app: FastAPI):
     yield
     await _conn.close()
 
-
-# TODO: Implement POST /mentions endpoint (see README for spec)
-# TODO: Implement POST /mentions/trends endpoint (see README for spec)
-
 app = FastAPI(title="Brand Mentions API", lifespan=lifespan)
 
 app.add_middleware(
@@ -60,8 +54,18 @@ app.add_middleware(
 )
 
 @app.get("/health")
-async def health():
-    return {"status": "ok"}
+async def health(db: aiosqlite.Connection = Depends(get_db)):
+    try:
+        async with db.execute("SELECT 1") as cur:
+            await cur.fetchone()
+        db_ok = True
+    except Exception:
+        db_ok = False
+
+    return {
+        "status": "ok" if db_ok else "degraded",
+        "db": db_ok,
+    }
     
 @app.post("/mentions")
 async def mentions(body: MentionsQuery, db: aiosqlite.Connection = Depends(get_db)):

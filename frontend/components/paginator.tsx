@@ -10,16 +10,16 @@ type PaginatorProps = {
   onPerPageChange: (perPage: number) => void;
 };
 
+const btnCls =
+"rounded border border-black border bg-white px-3 py-1 text-sm hover:bg-gray-50 " +
+"disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white";  
+
 export default function Paginator({ page, perPage, total, onPageChange, onPerPageChange }: PaginatorProps) {
   const [perPageInput, setPerPageInput] = useState(String(perPage));
   const totalPages = Math.max(1, Math.ceil(total / perPage));
 	
-  const minPages = 1;
-  const maxPages = 100;
-
-  const btnCls =
-  "rounded border border-black border-1 bg-white px-3 py-1 text-sm hover:bg-gray-50 " +
-  "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white";  
+  const MIN_PER_PAGE = 1;
+  const MAX_PER_PAGE = 100;
  
   useEffect(() => {
 	setPerPageInput(String(perPage));
@@ -35,7 +35,7 @@ export default function Paginator({ page, perPage, total, onPageChange, onPerPag
     const trimmed = perPageInput.trim();
     const n = Number(trimmed);
     const clamped = Number.isFinite(n)
-      ? Math.min(maxPages, Math.max(minPages, Math.floor(n)))
+      ? Math.min(MAX_PER_PAGE, Math.max(MIN_PER_PAGE, Math.floor(n)))
       : perPage;
 
     setPerPageInput(String(clamped));
@@ -55,7 +55,7 @@ export default function Paginator({ page, perPage, total, onPageChange, onPerPag
         <button onClick={() => onPageChange(page - 1)} disabled={!canPrev} className={btnCls}>
           Previous
         </button>
-        <span className="">
+        <span>
           Page {page} of {totalPages}
         </span>
         <button onClick={() => onPageChange(page + 1)} disabled={!canNext} className={btnCls}>
@@ -66,8 +66,8 @@ export default function Paginator({ page, perPage, total, onPageChange, onPerPag
           Per page:
           <input
             type="number"
-            min={minPages}
-            max={maxPages}
+            min={MIN_PER_PAGE}
+            max={MAX_PER_PAGE}
             value={perPageInput}
             onChange={(e) => setPerPageInput(e.target.value)}
             onBlur={commitPerPage}
@@ -77,7 +77,7 @@ export default function Paginator({ page, perPage, total, onPageChange, onPerPag
                 commitPerPage();
               }
             }}
-            className="w-16 rounded border border-black border-1 px-2 py-1 bg-white text-sm"
+            className="w-16 rounded border border-black border px-2 py-1 bg-white text-sm"
           />
         </label>
       </div>

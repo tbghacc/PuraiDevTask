@@ -9,7 +9,6 @@ const TrendChart = dynamic(() => import("./TrendChart"), { ssr: false });
 const inputCls = "rounded border border-black px-2 py-1 text-sm";
 
 export default function TrendSection() {
-	console.log("HI")
    const [filters, setFilters] = useState<TrendFilters>({
 	date_from: "",
 	date_to: "",

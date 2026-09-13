@@ -1,10 +1,4 @@
 // Types matching the backend API contract
-export interface MentionsRequest {
-  page: number;
-  per_page: number;
-  filters?: MentionFilters;
-}
-
 export interface Mention {
   id: string;
   query_text: string;
@@ -26,8 +20,8 @@ export interface MentionFilters {
 export interface MentionsResponse {
   data: Mention[];
   total: number;
-  page: number;
   per_page: number;
+  page: number;
 }
 
 export interface TrendFilters {
@@ -41,9 +35,3 @@ export interface TrendPoint {
   total: number;
   mentioned: number;
 }
-
-export interface TrendsResponse {
-  data: TrendPoint[];
-}
-
-export type MentionModelsResponse = string[];

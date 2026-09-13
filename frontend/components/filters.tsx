@@ -8,7 +8,7 @@ type FiltersProps = {
   onChange: (filters: MentionFilters) => void;
 };
 
-const inputCls = "rounded border border-black border-1 px-2 py-1 bg-white text-sm";
+const inputCls = "rounded border border-black border px-2 py-1 bg-white text-sm";
 
 export default function Filters({ filters, models, onChange }: FiltersProps) {
   function update<K extends keyof MentionFilters>(key: K, value: MentionFilters[K]) {

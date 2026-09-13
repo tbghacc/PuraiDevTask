@@ -3,22 +3,21 @@
 import { useEffect, useState } from "react";
 import type { MentionsResponse } from "@/lib/types";
 import Paginator  from "@/components/paginator"
-import dynamic from "next/dynamic";
-import type { TrendPoint } from "@/types";
 import Filters from "@/components/filters";
 import TrendSection from "@/components/trendSection";
+import TableSkeleton from "@/components/tableSkeleton";
+import ErrorState from "@/components/errorState";
 
 export default function Dashboard() {
-  const TrendChart = dynamic(() => import("@/components/TrendChart"), { ssr: false });
+
 	
   const [mentions, setMentions] = useState<Mention[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [trend, setTrend] = useState<TrendPoint[]>([]);
   
-  const [page, setPage] = useState<int>(1)
-  const [perPage, setPerPage] = useState<int>(25)
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(25)
   
   
   const [filters, setFilters] = useState<MentionFilters>({
@@ -40,6 +39,8 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
+		//setLoading(true); looks awful
+		setError(null);
 		const res = await fetch("http://localhost:8000/mentions", {
 						  method: "POST",
 						  headers: {
@@ -80,11 +81,12 @@ export default function Dashboard() {
     setPage(1);
   }
 
-  if (loading) return <p>Loading…</p>;
-  if (error) return <p>Error: {error}</p>;
   return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-center text-2xl font-bold mb-6">Brand Mentions Dashboard</h1>
+    <main className="min-h-screen p-8 ">
+	  <h1 className="text-center text-2xl font-bold mb-6">Brand Mentions Dashboard</h1>
+	  {error && <ErrorState message={error}/>}
+	  {loading && <TableSkeleton rows={Math.min(perPage, 15)} idWidth={idWidth} longestModel={longestModel}/>}
+      {!loading && !error && (<>
 	  <div>
 		  <div className="flex justify-between mt-4 mb-4">
 			  <Filters filters={filters} models={models} onChange={updateFilters} />
@@ -153,6 +155,7 @@ export default function Dashboard() {
 		<div className="mb-8 rounded-lg bg-white p-4 border border-2 border-black">
 		   <TrendSection />
 		</div>
+	  </>)}
     </main>
   );
 }

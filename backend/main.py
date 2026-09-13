@@ -4,12 +4,17 @@ import aiosqlite
 from pathlib import Path
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
+from datetime import datetime
 
 # TODO: Initialize database connection (use aiosqlite)
 
 class MentionsQuery(BaseModel):
     page: int
     per_page: int
+
+class TrendsQuery(BaseModel):
+    date_from: datetime
+    date_to: datetime
 
 DB_PATH = Path(__file__).parent / "mentions.db"
 
@@ -62,4 +67,22 @@ async def mentions(body: MentionsQuery, db: aiosqlite.Connection = Depends(get_d
         "page": page,
         "per_page": per_page,
     }
+@app.post("/mentions/trends")
+async def trends(body:TrendsQuery, db: aiosqlite.Connection = Depends(get_db)):
+    async with db.execute(
+        """
+        SELECT
+            date(created_at) AS date,
+            COUNT(*)         AS total,
+            SUM(mentioned)   AS mentioned
+        FROM mentions
+        WHERE created_at BETWEEN ? AND ?
+        GROUP BY date(created_at)
+        ORDER BY date ASC
+        """,
+        (body.date_from, body.date_to),
+    ) as cur:
+        rows = await cur.fetchall()
+
+    return [dict(r) for r in rows]
     

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import type { TrendFilters, TrendGroupBy, TrendPoint } from "@/types";
+import type { TrendFilters, TrendGroupBy, TrendPoint } from "@/lib/types";
 
-const TrendChart = dynamic(() => import("./TrendChart"), { ssr: false });
+const TrendChart = dynamic(() => import("./trendChart"), { ssr: false });
 
 const inputCls = "rounded border border-black px-2 py-1 text-sm";
 

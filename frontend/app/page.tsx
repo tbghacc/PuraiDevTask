@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { MentionsResponse } from "@/lib/types";
+import type { Mention, MentionsResponse, MentionFilters } from "@/lib/types";
 import Paginator  from "@/components/paginator"
 import Filters from "@/components/filters";
 import TrendSection from "@/components/trendSection";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { MentionFilters } from "@/types";
+import type { MentionFilters } from "@/lib/types";
 
 type FiltersProps = {
   filters: MentionFilters;

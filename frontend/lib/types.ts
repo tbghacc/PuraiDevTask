@@ -25,8 +25,8 @@ export interface MentionsResponse {
 }
 
 export interface TrendFilters {
-  date_from?: string;
-  date_to?: string;
+  date_from: string;
+  date_to: string;
   group_by: "day" | "week";
 }
 
@@ -34,4 +34,12 @@ export interface TrendPoint {
   date: string;
   total: number;
   mentioned: number;
+}
+
+export type TrendGroupBy = "day" | "week";
+
+export interface TrendFilters {
+  date_from: string;
+  date_to: string;
+  group_by: TrendGroupBy;
 }

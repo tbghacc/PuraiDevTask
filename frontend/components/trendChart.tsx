@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import type { TrendPoint } from "@/types";
+import type { TrendPoint } from "@/lib/types";
 
 export default function TrendChart({ data }: { data: TrendPoint[] }) {
   return (

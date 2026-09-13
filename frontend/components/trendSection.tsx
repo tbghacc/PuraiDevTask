@@ -9,6 +9,7 @@ const TrendChart = dynamic(() => import("./TrendChart"), { ssr: false });
 const inputCls = "rounded border border-black px-2 py-1 text-sm";
 
 export default function TrendSection() {
+   const API = process.env.NEXT_PUBLIC_API_URL!;
    const [filters, setFilters] = useState<TrendFilters>({
 	date_from: "",
 	date_to: "",
@@ -21,7 +22,7 @@ export default function TrendSection() {
   useEffect(() => {
   async function load() {
     try {
-	  const res = await fetch("http://localhost:8000/mentions/trends", {
+	  const res = await fetch(`${API}/mentions/trends`, {
 					  method: "POST",
 					  headers: {
 						"Content-Type": "application/json",

@@ -9,7 +9,7 @@ import TableSkeleton from "@/components/tableSkeleton";
 import ErrorState from "@/components/errorState";
 
 export default function Dashboard() {
-
+  const API = process.env.NEXT_PUBLIC_API_URL!;
 	
   const [mentions, setMentions] = useState<Mention[]>([])
   const [total, setTotal] = useState(0)
@@ -30,7 +30,7 @@ export default function Dashboard() {
   const [models, setModels] = useState<string[]>([]);
 
   useEffect(() => {
-	  fetch("http://localhost:8000/mentions/models")
+	  fetch(`${API}/mentions/models`)
 		.then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
 		.then((data: string[]) => setModels(data))
 		.catch((e) => console.error("models failed:", e));
@@ -41,7 +41,7 @@ export default function Dashboard() {
       try {
 		//setLoading(true); looks awful
 		setError(null);
-		const res = await fetch("http://localhost:8000/mentions", {
+		const res = await fetch(`${API}/mentions`, {
 						  method: "POST",
 						  headers: {
 							"Content-Type": "application/json",

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { MentionsResponse } from "@lib/types";
+import type { MentionsResponse } from "@/lib/types";
+import Paginator  from "@/components/paginator"
 
 // TODO: Build a Brand Mentions Dashboard with:
 //
@@ -56,7 +57,12 @@ export default function Dashboard() {
       }
     }
     load();
-  }, []);
+  }, [page, perPage]);
+  
+   function handlePerPageChange(next: number) {
+    setPerPage(next);
+    setPage(1);
+  }
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Error: {error}</p>;
@@ -99,6 +105,13 @@ export default function Dashboard() {
           ))}
         </tbody>
       </table>
+	  <Paginator
+            page={page}
+            perPage={perPage}
+            total={total}
+            onPageChange={setPage}
+			onPerPageChange={handlePerPageChange}
+          />
     </main>
   );
 }
